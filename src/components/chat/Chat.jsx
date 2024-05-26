@@ -1,13 +1,7 @@
 import { useEffect, useRef, useState } from "react";
 import "./chat.css";
 import EmojiPicker from "emoji-picker-react";
-import {
-  arrayUnion,
-  doc,
-  getDoc,
-  onSnapshot,
-  updateDoc,
-} from "firebase/firestore";
+import {arrayUnion, doc, getDoc, onSnapshot, updateDoc, } from "firebase/firestore";
 import { db } from "../../lib/firebase";
 import { useChatStore } from "../../lib/chatStore";
 import { useUserStore } from "../../lib/userStore";
@@ -28,7 +22,6 @@ const Chat = () => {
     useChatStore();
 
   const endRef = useRef(null);
-
   useEffect(() => {
     endRef.current?.scrollIntoView({ behavior: "smooth" });
   }, [chat.messages]);
@@ -54,19 +47,14 @@ const Chat = () => {
         file: e.target.files[0],
         url: URL.createObjectURL(e.target.files[0]),
       });
-    }
-  };
+    }};
 
   const handleSend = async () => {
     if (text === "") return;
-
     let imgUrl = null;
-
     try {
       if (img.file) {
-        imgUrl = await upload(img.file);
-      }
-
+        imgUrl = await upload(img.file);}
       await updateDoc(doc(db, "chats", chatId), {
         messages: arrayUnion({
           senderId: currentUser.id,
@@ -77,28 +65,22 @@ const Chat = () => {
       });
 
       const userIDs = [currentUser.id, user.id];
-
       userIDs.forEach(async (id) => {
         const userChatsRef = doc(db, "userchats", id);
         const userChatsSnapshot = await getDoc(userChatsRef);
-
         if (userChatsSnapshot.exists()) {
           const userChatsData = userChatsSnapshot.data();
-
           const chatIndex = userChatsData.chats.findIndex(
             (c) => c.chatId === chatId
           );
-
           userChatsData.chats[chatIndex].lastMessage = text;
           userChatsData.chats[chatIndex].isSeen =
             id === currentUser.id ? true : false;
           userChatsData.chats[chatIndex].updatedAt = Date.now();
-
           await updateDoc(userChatsRef, {
             chats: userChatsData.chats,
           });
-        }
-      });
+        }});
     } catch (err) {
       console.log(err);
     } finally{
@@ -106,33 +88,28 @@ const Chat = () => {
       file: null,
       url: "",
     });
-
     setText("");
-    }
-  };
+    }};
 
   return (
     <div className="chat">
       <div className="top">
-        <div className="user">
-          <img src={user?.avatar || "./avatar.png"} alt="" />
-          <div className="texts">
-            <span>{user?.username}</span>
-            <p>Lorem ipsum dolor, sit amet.</p>
-          </div>
-        </div>
-        <div className="icons">
-          <img src="./phone.png" alt="" />
-          <img src="./video.png" alt="" />
-          <img src="./info.png" alt="" />
-        </div>
+       <div className="user">
+        <img src={user?.avatar || "./avatar.png"} alt="" />
+         <div className="texts">
+        <span>{user?.username}</span>
+        <p>Lorem ipsum dolor, sit amet.</p>
       </div>
+      </div>
+       <div className="icons">
+      <img src="./phone.png" alt="" />
+      <img src="./video.png" alt="" />
+       <img src="./info.png" alt="" />
+      </div>
+    </div>
       <div className="center">
-        {chat?.messages?.map((message) => (
-          <div
-            className={
-              message.senderId === currentUser?.id ? "message own" : "message"
-            }
+       {chat?.messages?.map((message) => (
+        <div className={message.senderId === currentUser?.id ? "message own" : "message"}
             key={message?.createAt}
           >
             <div className="texts">
@@ -152,11 +129,11 @@ const Chat = () => {
         <div ref={endRef}></div>
       </div>
       <div className="bottom">
-        <div className="icons">
-          <label htmlFor="file">
-            <img src="./img.png" alt="" />
-          </label>
-          <input
+     <div className="icons">
+       <label htmlFor="file">
+       <img src="./img.png" alt="" />
+      </label>
+       <input
             type="file"
             id="file"
             style={{ display: "none" }}
